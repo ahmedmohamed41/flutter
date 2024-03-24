@@ -79,7 +79,11 @@ platform_properties:
         [
           {"dependency": "apple_signing", "version": "version:to_2024"}
         ]
+<<<<<<< HEAD
+      os: Mac-12|Mac-13
+=======
       os: Mac-13
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       device_type: none
       $flutter/osx_sdk : >-
         {
@@ -91,7 +95,11 @@ platform_properties:
         [
           {"dependency": "apple_signing", "version": "version:to_2024"}
         ]
+<<<<<<< HEAD
+      os: Mac-12|Mac-13
+=======
       os: Mac-13
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       device_type: none
       cpu: arm64
       $flutter/osx_sdk : >-
@@ -106,7 +114,11 @@ platform_properties:
         ]
       device_type: none
       mac_model: "Macmini8,1"
+<<<<<<< HEAD
+      os: Mac-12|Mac-13
+=======
       os: Mac-13
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       tags: >
         ["devicelab", "hostonly", "mac"]
       $flutter/osx_sdk : >-
@@ -119,7 +131,11 @@ platform_properties:
         [
           {"dependency": "apple_signing", "version": "version:to_2024"}
         ]
+<<<<<<< HEAD
+      os: Mac-12|Mac-13
+=======
       os: Mac-13
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       device_type: none
       cpu: x86
       $flutter/osx_sdk : >-
@@ -130,10 +146,17 @@ platform_properties:
     properties:
       dependencies: >-
         [
+<<<<<<< HEAD
+          {"dependency": "gems", "version": "v3.3.14"},
+          {"dependency": "apple_signing", "version": "version:to_2024"}
+        ]
+      os: Mac-12|Mac-13
+=======
           {"dependency": "ruby", "version": "ruby_3.1-pod_1.13"},
           {"dependency": "apple_signing", "version": "version:to_2024"}
         ]
       os: Mac-13
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       device_type: none
       cpu: x86
       $flutter/osx_sdk : >-
@@ -175,10 +198,17 @@ platform_properties:
     properties:
       dependencies: >-
         [
+<<<<<<< HEAD
+          {"dependency": "gems", "version": "v3.3.14"},
+          {"dependency": "apple_signing", "version": "version:to_2024"}
+        ]
+      os: Mac-12|Mac-13
+=======
           {"dependency": "ruby", "version": "ruby_3.1-pod_1.13"},
           {"dependency": "apple_signing", "version": "version:to_2024"}
         ]
       os: Mac-13
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       cpu: x86
       device_os: iOS-16
       $flutter/osx_sdk : >-
@@ -192,7 +222,11 @@ platform_properties:
           {"dependency": "ruby", "version": "ruby_3.1-pod_1.13"},
           {"dependency": "apple_signing", "version": "none"}
         ]
+<<<<<<< HEAD
+      os: Mac-12|Mac-13
+=======
       os: Mac-13
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       cpu: arm64
       device_os: iOS-16
       $flutter/osx_sdk : >-
@@ -4564,7 +4598,11 @@ targets:
         ["devicelab", "ios", "mac"]
       task_name: flutter_gallery__transition_perf_e2e_ios
       drone_dimensions: >
+<<<<<<< HEAD
+        ["device_os=iOS-16","os=Mac-12|Mac-13", "cpu=x86"]
+=======
         ["device_os=iOS-16","os=Mac-13", "cpu=x86"]
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
 
   - name: Mac_ios animated_blur_backdrop_filter_perf_ios__timeline_summary
     recipe: devicelab/devicelab_drone

@@ -4,10 +4,13 @@
 
 import 'package:unified_analytics/unified_analytics.dart';
 
+<<<<<<< HEAD
+=======
 import '../base/config.dart';
 import '../base/io.dart';
 import '../features.dart';
 import '../globals.dart' as globals;
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
 import '../version.dart';
 
 /// This function is called from within the context runner to perform
@@ -23,8 +26,11 @@ Analytics getAnalytics({
   required bool runningOnBot,
   required FlutterVersion flutterVersion,
   required Map<String, String> environment,
+<<<<<<< HEAD
+=======
   required String? clientIde,
   required Config config,
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
   bool enableAsserts = false,
   FakeAnalytics? analyticsOverride,
 }) {
@@ -54,6 +60,10 @@ Analytics getAnalytics({
     flutterVersion: flutterVersion.frameworkVersion,
     dartVersion: flutterVersion.dartSdkVersion,
     enableAsserts: enableAsserts,
+<<<<<<< HEAD
+  );
+}
+=======
     clientIde: clientIde,
     enabledFeatures: getEnabledFeatures(config),
   );
@@ -82,3 +92,4 @@ int? getMaxRss(ProcessInfo processInfo) {
   }
   return null;
 }
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4

@@ -93,8 +93,11 @@ Future<T> runInContext<T>(
         runningOnBot: runningOnBot,
         flutterVersion: globals.flutterVersion,
         environment: globals.platform.environment,
+<<<<<<< HEAD
+=======
         clientIde: globals.platform.environment['FLUTTER_HOST'],
         config: globals.config,
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
       ),
       AndroidBuilder: () => AndroidGradleBuilder(
         java: globals.java,

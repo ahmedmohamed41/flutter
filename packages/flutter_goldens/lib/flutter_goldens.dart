@@ -20,6 +20,7 @@ export 'skia_client.dart';
 // https://github.com/flutter/flutter/wiki/Writing-a-golden-file-test-for-package%3Aflutter
 
 const String _kFlutterRootKey = 'FLUTTER_ROOT';
+final RegExp _kMainBranch = RegExp(r'master|main');
 
 bool _isMainBranch(String? branch) {
   return branch == 'main'
@@ -311,11 +312,23 @@ class FlutterPostSubmitFileComparator extends FlutterGoldenFileComparator {
 
   /// Decides based on the current environment if goldens tests should be
   /// executed through Skia Gold.
+<<<<<<< HEAD
+  static bool isAvailableForEnvironment(Platform platform) {
+    final bool luciPostSubmit = platform.environment.containsKey('SWARMING_TASK_ID')
+      && platform.environment.containsKey('GOLDCTL')
+      // Luci tryjob environments contain this value to inform the [FlutterPreSubmitComparator].
+      && !platform.environment.containsKey('GOLD_TRYJOB')
+      // Only run on main branch.
+      && _kMainBranch.hasMatch(platform.environment['GIT_BRANCH'] ?? '');
+
+    return luciPostSubmit;
+=======
   static bool isRecommendedForEnvironment(Platform platform) {
     return platform.environment.containsKey('SWARMING_TASK_ID') // Indicates LUCI environment.
         && platform.environment.containsKey('GOLDCTL') // Needed to use Gold.
         && !platform.environment.containsKey('GOLD_TRYJOB') // Indicates a pre-submit environment on LUCI.
         && _isMainBranch(platform.environment['GIT_BRANCH']);
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
   }
 }
 
@@ -405,11 +418,21 @@ class FlutterPreSubmitFileComparator extends FlutterGoldenFileComparator {
 
   /// Decides based on the current environment if goldens tests should be
   /// executed as pre-submit tests with Skia Gold.
+<<<<<<< HEAD
+  static bool isAvailableForEnvironment(Platform platform) {
+    final bool luciPreSubmit = platform.environment.containsKey('SWARMING_TASK_ID')
+      && platform.environment.containsKey('GOLDCTL')
+      && platform.environment.containsKey('GOLD_TRYJOB')
+      // Only run on the main branch
+      && _kMainBranch.hasMatch(platform.environment['GIT_BRANCH'] ?? '');
+    return luciPreSubmit;
+=======
   static bool isRecommendedForEnvironment(Platform platform) {
     return platform.environment.containsKey('SWARMING_TASK_ID') // Indicates LUCI environment.
         && platform.environment.containsKey('GOLDCTL') // Needed to use Gold.
         && platform.environment.containsKey('GOLD_TRYJOB') // Indicates a pre-submit environment on LUCI.
         && _isMainBranch(platform.environment['GIT_BRANCH']);
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
   }
 }
 
@@ -490,10 +513,20 @@ class FlutterSkippingFileComparator extends FlutterGoldenFileComparator {
   /// used.
   ///
   /// If we are in a CI environment, LUCI or Cirrus, but are not using the other
+<<<<<<< HEAD
+  /// comparators, we skip.
+  static bool isAvailableForEnvironment(Platform platform) {
+    return (platform.environment.containsKey('SWARMING_TASK_ID')
+      // Some builds are still being run on Cirrus, we should skip these.
+      || platform.environment.containsKey('CIRRUS_CI'))
+      // If we are in CI, skip on branches that are not main.
+      && !_kMainBranch.hasMatch(platform.environment['GIT_BRANCH'] ?? '');
+=======
   /// comparators (determined by checking this after the others), we skip.
   static bool isRecommendedForEnvironment(Platform platform) {
     return platform.environment.containsKey('SWARMING_TASK_ID') // Indicates LUCI environment.
         || platform.environment.containsKey('CIRRUS_CI'); // Indicates Cirrus environment.
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
   }
 }
 

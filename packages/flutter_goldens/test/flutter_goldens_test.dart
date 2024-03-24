@@ -956,6 +956,516 @@ void main() {
     expect(log, isEmpty);
   });
 
+<<<<<<< HEAD
+    group('Post-Submit', () {
+      late FakeSkiaGoldClient fakeSkiaClient;
+
+      setUp(() {
+        fakeSkiaClient = FakeSkiaGoldClient();
+        final Directory basedir = fs.directory('flutter/test/library/')
+          ..createSync(recursive: true);
+        comparator = FlutterPostSubmitFileComparator(
+          basedir.uri,
+          fakeSkiaClient,
+          fs: fs,
+          platform: platform,
+        );
+      });
+
+      test('asserts .png format', () async {
+        await expectLater(
+          () async {
+            return comparator.compare(
+              Uint8List.fromList(_kTestPngBytes),
+              Uri.parse('flutter.golden_test.1'),
+            );
+          },
+          throwsA(
+            isA<AssertionError>().having((AssertionError error) => error.toString(),
+              'description',
+              contains(
+                'Golden files in the Flutter framework must end with the file '
+                'extension .png.'
+              ),
+            ),
+          ),
+        );
+      });
+
+      test('calls init during compare', () {
+        expect(fakeSkiaClient.initCalls, 0);
+        comparator.compare(
+          Uint8List.fromList(_kTestPngBytes),
+          Uri.parse('flutter.golden_test.1.png'),
+        );
+        expect(fakeSkiaClient.initCalls, 1);
+      });
+
+      test('does not call init in during construction', () {
+        expect(fakeSkiaClient.initCalls, 0);
+        FlutterPostSubmitFileComparator.fromDefaultComparator(
+          platform,
+          goldens: fakeSkiaClient,
+        );
+        expect(fakeSkiaClient.initCalls, 0);
+      });
+
+      group('correctly determines testing environment', () {
+        test('returns true for configured Luci', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : '12345678990',
+              'GOLDCTL' : 'goldctl',
+              'GIT_BRANCH' : 'master',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns false on release branches in postsubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GIT_BRANCH' : 'flutter-3.16-candidate.0',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+
+        test('returns true on master branch in postsubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GIT_BRANCH' : 'master',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns true on main branch in postsubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GIT_BRANCH' : 'main',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns false - GOLDCTL not present', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : '12345678990',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+
+        test('returns false - GOLD_TRYJOB active', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : '12345678990',
+              'GOLDCTL' : 'goldctl',
+              'GOLD_TRYJOB' : 'git/ref/12345/head',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+
+        test('returns false - on Cirrus', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'CIRRUS_CI': 'true',
+              'CIRRUS_PR': '',
+              'CIRRUS_BRANCH': 'master',
+              'GOLD_SERVICE_ACCOUNT': 'service account...',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+      });
+    });
+
+    group('Pre-Submit', () {
+      late FakeSkiaGoldClient fakeSkiaClient;
+
+      setUp(() {
+        fakeSkiaClient = FakeSkiaGoldClient();
+        final Directory basedir = fs.directory('flutter/test/library/')
+          ..createSync(recursive: true);
+        comparator = FlutterPreSubmitFileComparator(
+          basedir.uri,
+          fakeSkiaClient,
+          fs: fs,
+          platform: platform,
+        );
+      });
+
+      test('asserts .png format', () async {
+        await expectLater(
+          () async {
+            return comparator.compare(
+              Uint8List.fromList(_kTestPngBytes),
+              Uri.parse('flutter.golden_test.1'),
+            );
+          },
+          throwsA(
+            isA<AssertionError>().having((AssertionError error) => error.toString(),
+              'description',
+              contains(
+                'Golden files in the Flutter framework must end with the file '
+                'extension .png.'
+              ),
+            ),
+          ),
+        );
+      });
+
+      test('calls init during compare', () {
+        expect(fakeSkiaClient.tryInitCalls, 0);
+        comparator.compare(
+          Uint8List.fromList(_kTestPngBytes),
+          Uri.parse('flutter.golden_test.1.png'),
+        );
+        expect(fakeSkiaClient.tryInitCalls, 1);
+      });
+
+      test('does not call init in during construction', () {
+        expect(fakeSkiaClient.tryInitCalls, 0);
+        FlutterPostSubmitFileComparator.fromDefaultComparator(
+          platform,
+          goldens: fakeSkiaClient,
+        );
+        expect(fakeSkiaClient.tryInitCalls, 0);
+      });
+
+      group('correctly determines testing environment', () {
+        test('returns false on release branches in presubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GOLD_TRYJOB' : 'true',
+              'GIT_BRANCH' : 'flutter-3.16-candidate.0',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPreSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+
+        test('returns true on master branch in presubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GOLD_TRYJOB' : 'true',
+              'GIT_BRANCH' : 'master',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPreSubmitFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns true on main branch in presubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GOLD_TRYJOB' : 'true',
+              'GIT_BRANCH' : 'main',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPreSubmitFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns true for Luci', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : '12345678990',
+              'GOLDCTL' : 'goldctl',
+              'GOLD_TRYJOB' : 'git/ref/12345/head',
+              'GIT_BRANCH' : 'master',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPreSubmitFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns false - not on Luci', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPreSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+
+        test('returns false - GOLDCTL missing', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : '12345678990',
+              'GOLD_TRYJOB' : 'git/ref/12345/head',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPreSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+
+        test('returns false - GOLD_TRYJOB missing', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : '12345678990',
+              'GOLDCTL' : 'goldctl',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPreSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+
+        test('returns false - on Cirrus', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'CIRRUS_CI': 'true',
+              'CIRRUS_PR': '',
+              'CIRRUS_BRANCH': 'master',
+              'GOLD_SERVICE_ACCOUNT': 'service account...',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterPostSubmitFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+      });
+    });
+
+    group('Skipping', () {
+      group('correctly determines testing environment', () {
+        test('returns true on release branches in presubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GOLD_TRYJOB' : 'true',
+              'GIT_BRANCH' : 'flutter-3.16-candidate.0',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterSkippingFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns true on release branches in postsubmit', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : 'sweet task ID',
+              'GOLDCTL' : 'some/path',
+              'GIT_BRANCH' : 'flutter-3.16-candidate.0',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterSkippingFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns true on Cirrus builds', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'CIRRUS_CI' : 'yep',
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterSkippingFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns true on irrelevant LUCI builds', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+              'SWARMING_TASK_ID' : '1234567890',
+            },
+            operatingSystem: 'macos'
+          );
+          expect(
+            FlutterSkippingFileComparator.isAvailableForEnvironment(platform),
+            isTrue,
+          );
+        });
+
+        test('returns false - not in CI', () {
+          platform = FakePlatform(
+            environment: <String, String>{
+              'FLUTTER_ROOT': _kFlutterRoot,
+            },
+            operatingSystem: 'macos',
+          );
+          expect(
+            FlutterSkippingFileComparator.isAvailableForEnvironment(platform),
+            isFalse,
+          );
+        });
+      });
+    });
+
+    group('Local', () {
+      late FlutterLocalFileComparator comparator;
+      final FakeSkiaGoldClient fakeSkiaClient = FakeSkiaGoldClient();
+
+      setUp(() async {
+        final Directory basedir = fs.directory('flutter/test/library/')
+          ..createSync(recursive: true);
+        comparator = FlutterLocalFileComparator(
+          basedir.uri,
+          fakeSkiaClient,
+          fs: fs,
+          platform: FakePlatform(
+            environment: <String, String>{'FLUTTER_ROOT': _kFlutterRoot},
+            operatingSystem: 'macos',
+          ),
+        );
+
+        const String hash = '55109a4bed52acc780530f7a9aeff6c0';
+        fakeSkiaClient.expectationForTestValues['flutter.golden_test.1'] = hash;
+        fakeSkiaClient.imageBytesValues[hash] =_kTestPngBytes;
+        fakeSkiaClient.cleanTestNameValues['library.flutter.golden_test.1.png'] = 'flutter.golden_test.1';
+      });
+
+      test('asserts .png format', () async {
+        await expectLater(
+          () async {
+            return comparator.compare(
+              Uint8List.fromList(_kTestPngBytes),
+              Uri.parse('flutter.golden_test.1'),
+            );
+          },
+          throwsA(
+            isA<AssertionError>().having((AssertionError error) => error.toString(),
+              'description',
+              contains(
+                'Golden files in the Flutter framework must end with the file '
+                'extension .png.'
+              ),
+            ),
+          ),
+        );
+      });
+
+      test('passes when bytes match', () async {
+        expect(
+          await comparator.compare(
+            Uint8List.fromList(_kTestPngBytes),
+            Uri.parse('flutter.golden_test.1.png'),
+          ),
+          isTrue,
+        );
+      });
+
+      test('returns FlutterSkippingGoldenFileComparator when network connection is unavailable', () async {
+        final FakeDirectory fakeDirectory = FakeDirectory();
+        fakeDirectory.existsSyncValue = true;
+        fakeDirectory.uri = Uri.parse('/flutter');
+
+        fakeSkiaClient.getExpectationForTestThrowable = const OSError("Can't reach Gold");
+
+        FlutterGoldenFileComparator comparator = await FlutterLocalFileComparator.fromDefaultComparator(
+          platform,
+          goldens: fakeSkiaClient,
+          baseDirectory: fakeDirectory,
+        );
+        expect(comparator.runtimeType, FlutterSkippingFileComparator);
+
+        fakeSkiaClient.getExpectationForTestThrowable =  const SocketException("Can't reach Gold");
+
+        comparator = await FlutterLocalFileComparator.fromDefaultComparator(
+          platform,
+          goldens: fakeSkiaClient,
+          baseDirectory: fakeDirectory,
+        );
+        expect(comparator.runtimeType, FlutterSkippingFileComparator);
+        // reset property or it will carry on to other tests
+        fakeSkiaClient.getExpectationForTestThrowable = null;
+      });
+    });
+=======
   test('FlutterGoldenFileComparator - Local - skips when network connection is unavailable', () async {
     final FileSystem fs = createFakeFileSystem();
     final FakeProcessManager process = FakeProcessManager()
@@ -984,6 +1494,7 @@ void main() {
     expect(log, <String>[
       'Auto-passing "pkg.flutter.golden_test.1.png" test, ignoring network error when contacting Skia.'
     ]);
+>>>>>>> bae5e49bc2a867403c43b2aae2de8f8c33b037e4
   });
 }
 
